@@ -455,6 +455,10 @@ if __name__=="__main__":
     app.run(host="0.0.0.0")        
 
 '''
+
+
+# --------------------------------practice mlflow
+'''
 best_model_name = max(model_report,key=model_report.get)
 best_model_score = model_report[best_model_name]
 best_model = models[beat_model_name]
@@ -480,5 +484,14 @@ with mlflow.start_run():
 
     if track_url != 'file':
         mlflow.sklearn.log_model(best_model,'model',)
+
+'''
+
+
+
+
+
+
+
 
 
