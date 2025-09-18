@@ -18,12 +18,14 @@ if __name__=='__main__':
         train_data_path,test_data_path = dt_ingestion.initiate_data_ingestion()
 
         #data_transformation_config = DataTransformationConfig()
-        # dt_transformation = DataTransformation()
-        # train_arr,test_arr,_ = dt_transformation.initiate_data_transformation(train_data_path,test_data_path)#('artifacts/train.csv','artifacts/test.csv')
+        dt_transformation = DataTransformation()
+        train_arr,test_arr,_ = dt_transformation.initiate_data_transformation(train_data_path,test_data_path)#('artifacts/train.csv','artifacts/test.csv')
+        print('Train_array_Shape:',train_arr.shape)
+        print('Test_array_Shape:',test_arr.shape)
 
         # # model_train_config = ModelTrain_config()
-        # model_train = Model_Train()
-        # print(model_train.init_model_traniner(train_arr,test_arr))
+        model_train = Model_Train()
+        print(model_train.init_model_traniner(train_arr,test_arr))
         
     except Exception as e:
         raise CustomException(e, sys)

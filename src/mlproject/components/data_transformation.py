@@ -20,10 +20,10 @@ class DataTransformation:
     def __init__(self):
         self.data_transformation_config = DataTransformationConfig()
 
-    def get_data_transformer_object(self):
+    def get_data_transformer_object(self,data: pd.DataFrame):
         try:
-            numerical_columns = ['pass the numeric columns here']
-            categorical_columns = ['pass the categorical columns here']
+            numerical_columns = data.select_dtypes(include=['number']).columns
+            categorical_columns = data.select_dtypes(include=['object']).columns
 
             num_pipeline = Pipeline(steps=[
                 ('imputer', SimpleImputer(strategy='median')),
@@ -52,10 +52,7 @@ class DataTransformation:
             test_df = pd.read_csv(test_path)
             logging.info('Read train and test data completed')
 
-            logging.info('Obtaining preprocessing object')
-            preprocessing_obj = self.get_data_transformer_object()
-
-            target_column_name = 'target'
+            target_column_name = 'math_score'
             numerical_columns = []
 
             input_feature_train_df = train_df.drop(columns=[target_column_name], axis=1)
@@ -65,6 +62,7 @@ class DataTransformation:
             target_feature_test_df = test_df[target_column_name]
 
             logging.info('Applying preprocessing object on training and testing dataframes')
+            preprocessing_obj = self.get_data_transformer_object(input_feature_train_df)
 
             input_feature_train_arr = preprocessing_obj.fit_transform(input_feature_train_df)
             input_feature_test_arr = preprocessing_obj.transform(input_feature_test_df)

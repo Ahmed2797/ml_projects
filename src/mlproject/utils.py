@@ -61,7 +61,8 @@ def evaluate_model(xtrain,ytrain,xtest,ytest,models,params):
             gs = GridSearchCV(model,param,cv=3)
             gs.fit(xtrain,ytrain)
 
-            gs.set_params(**gs.get_params)
+            best_params = gs.best_params_
+            model.set_params(**best_params)
             model.fit(xtrain,ytrain)
 
             ypred_train = model.predict(xtrain)
@@ -71,6 +72,8 @@ def evaluate_model(xtrain,ytrain,xtest,ytest,models,params):
             test_score = r2_score(ytest,ypred_test)
 
             report[model_name] = test_score
+            print(report)
+            #print(best_params)
 
         return report
 
