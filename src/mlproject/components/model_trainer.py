@@ -15,7 +15,7 @@ from catboost import CatBoostRegressor
 
 @dataclass
 class ModelTrain_config:
-    model_train_path = os.path.join('art','model.pkl')
+    model_train_path = os.path.join('artifacts','best_model.pkl')
 
 class Model_Train:
     def __init__(self):

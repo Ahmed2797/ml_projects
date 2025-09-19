@@ -83,7 +83,12 @@ def evaluate_model(xtrain,ytrain,xtest,ytest,models,params):
 
 def load_object(file_path):
     try:
-        with open(file_path,'wb') as file_obj:
+        with open(file_path,'rb') as file_obj:
             return pickle.load(file_obj)
     except Exception as ex:
         raise CustomException(ex,sys)
+    
+
+
+
+        

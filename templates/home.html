@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Scores — Prediction & Combination</title>
+  <style>
+    :root{font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;}
+    body{max-width:900px;margin:32px auto;padding:20px;background:#f7fafc}
+    .card{background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,0.06);padding:20px}
+    label{display:block;margin:8px 0 6px;font-weight:600}
+    select,input[type=number]{width:100%;padding:10px;border-radius:8px;border:1px solid #e6edf3}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .full{grid-column:1/-1}
+    button{background:#2563eb;color:white;padding:10px 14px;border-radius:8px;border:none;cursor:pointer}
+    pre{background:#0f172a;color:#e6f0ff;padding:14px;border-radius:8px;overflow:auto}
+    .hint{font-size:13px;color:#475569;margin-top:6px}
+    @media (max-width:700px){.grid{grid-template-columns:1fr}}
+    .result{margin-top:16px;padding:12px;background:#ecfdf5;border:1px solid #34d399;border-radius:8px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Student Info — Prediction & Combination</h2>
+    <p class="hint">Fill the form and click <strong>Predict</strong> to send to Flask OR <strong>Combine</strong> to see JSON + friendly sentence.</p>
+
+    <form id="studentForm" action="{{ url_for('prediction') }}" method="post">
+
+      <div class="grid">
+        <div>
+          <label for="gender">Gender</label>
+          <select id="gender" name="gender" required>
+            <option value="">-- Select gender --</option>
+            <option value="female">female</option>
+            <option value="male">male</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="race_ethnicity">Race / Ethnicity</label>
+          <select id="race_ethnicity" name="race_ethnicity" required>
+            <option value="">-- Select race/ethnicity --</option>
+            <option value="group A">group A</option>
+            <option value="group B">group B</option>
+            <option value="group C">group C</option>
+            <option value="group D">group D</option>
+            <option value="group E">group E</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="parental_level_of_education">Parental level of education</label>
+          <select id="parental_level_of_education" name="parental_level_of_education" required>
+            <option value="">-- Select parental education --</option>
+            <option value="some high school">some high school</option>
+            <option value="high school">high school</option>
+            <option value="some college">some college</option>
+            <option value="associate's degree">associate's degree</option>
+            <option value="bachelor's degree">bachelor's degree</option>
+            <option value="master's degree">master's degree</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="lunch">Lunch</label>
+          <select id="lunch" name="lunch" required>
+            <option value="">-- Select lunch type --</option>
+            <option value="standard">standard</option>
+            <option value="free/reduced">free/reduced</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="test_preparation_course">Test preparation course</label>
+          <select id="test_preparation_course" name="test_preparation_course" required>
+            <option value="">-- Select course status --</option>
+            <option value="none">none</option>
+            <option value="completed">completed</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="reading_score">Reading score (0 - 100)</label>
+          <input id="reading_score" name="reading_score" type="number" min="0" max="100" required />
+        </div>
+
+        <div>
+          <label for="writing_score">Writing score (0 - 100)</label>
+          <input id="writing_score" name="writing_score" type="number" min="0" max="100" required />
+        </div>
+
+        <div class="full">
+          <label>&nbsp;</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="submit">Predict</button>
+            <!-- <button type="button" id="combineBtn">Combine</button>
+            <button type="button" id="downloadBtn">Download JSON</button>
+            <button type="reset">Reset</button> -->
+          </div>
+        </div>
+
+        <!-- <div class="full">
+          <label>Combined object (JSON)</label>
+          <pre id="jsonOut">{ }</pre>
+        </div>
+
+        <div class="full">
+          <label>Friendly sentence</label>
+          <div id="sentence" style="padding:10px;background:#f1f5f9;border-radius:8px;color:#0f172a"></div>
+        </div>
+      </div>
+    </form> -->
+
+    {% if result %}
+    <div class="result">
+      <h3>Prediction Result:</h3>
+      <p>{{ result }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- <script>
+    const form = document.getElementById('studentForm');
+    const combineBtn = document.getElementById('combineBtn');
+    const jsonOut = document.getElementById('jsonOut');
+    const sentence = document.getElementById('sentence');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    function readForm() {
+      const data = {
+        gender: form.gender.value || null,
+        race_ethnicity: form.race_ethnicity.value || null,
+        parental_level_of_education: form.parental_level_of_education.value || null,
+        lunch: form.lunch.value || null,
+        test_preparation_course: form.test_preparation_course.value || null,
+        reading_score: form.reading_score.value ? parseInt(form.reading_score.value,10) : null,
+        writing_score: form.writing_score.value ? parseInt(form.writing_score.value,10) : null
+      };
+      return data;
+    }
+
+    function makeSentence(obj){
+      if (!obj.gender) return '';
+      return `${obj.gender} student from ${obj.race_ethnicity || 'unknown group'}, whose parents have ${obj.parental_level_of_education || 'unknown education'}, had ${obj.lunch || 'unknown lunch'} lunch and ${obj.test_preparation_course || 'unknown'} test prep. Reading: ${obj.reading_score ?? 'N/A'}, Writing: ${obj.writing_score ?? 'N/A'}.`;
+    }
+
+    combineBtn.addEventListener('click', ()=>{
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      const data = readForm();
+      jsonOut.textContent = JSON.stringify(data, null, 2);
+      sentence.textContent = makeSentence(data);
+    });
+
+    downloadBtn.addEventListener('click', ()=>{
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      const data = readForm();
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'student_combined.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html> -->
