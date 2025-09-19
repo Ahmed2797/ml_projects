@@ -3,13 +3,18 @@ import sys
 from src.mlproject.exception import CustomException
 from src.mlproject.logger import logging 
 from dataclasses import dataclass 
-from src.mlproject.utils import save_object,evaluate_model
+from src.mlproject.utils import save_object,evaluate_model,evalute_metries
 from sklearn.metrics import r2_score
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.linear_model import LinearRegression
 from xgboost import XGBRegressor
 from catboost import CatBoostRegressor
+import mlflow 
+import dagshub 
+import mlflow.sklearn
+from urllib.parse import urlparse 
+
 
 
 
@@ -96,6 +101,31 @@ class Model_Train:
 
             print(f"Best Model Name: {best_model_name}")
             print(f"Best Model Score: {best_model_score}")
+
+            best_param = params[best_model_name]
+            print('Best params:',best_param)
+
+            mlflow.set_registry_uri('https://dagshub.com/Ahmed2797/ml_projects.mlflow')
+            tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
+            dagshub.init(repo_owner='Ahmed2797', repo_name='ml_projects', mlflow=True)
+
+            with mlflow.start_run():
+                pred = best_model.predict(xtest)
+                r2,mae,rmse = evalute_metries(ytest,pred) 
+
+                mlflow.log_params(best_param)
+
+                mlflow.log_metric("rmse", rmse)
+                mlflow.log_metric("r2", r2)
+                mlflow.log_metric("mae", mae)
+
+                if tracking_url_type_store!="file":
+                    mlflow.sklearn.log_model(best_model, "model", registered_model_name=best_model_name)
+                else:
+                    mlflow.sklearn.log_model(best_model, "model")
+
+                
+
 
             if best_model_score < 0.6:
                 raise Exception('Best model doesnot found')

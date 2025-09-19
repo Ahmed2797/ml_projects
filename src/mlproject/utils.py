@@ -9,7 +9,7 @@ import pymysql
 import pickle 
 import numpy as np 
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score,mean_absolute_error,mean_squared_error,root_mean_squared_error
 
 
 load_dotenv()
@@ -89,6 +89,11 @@ def load_object(file_path):
         raise CustomException(ex,sys)
     
 
-
+def evalute_metries(true,pred):
+    r2 = r2_score(true,pred)
+    mae = mean_absolute_error(true,pred)
+    mse = mean_squared_error(true,pred)
+    rmse = root_mean_squared_error(true,pred)
+    return r2,mae,rmse
 
         
